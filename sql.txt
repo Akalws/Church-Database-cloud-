@@ -1,0 +1,156 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydb
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Schema Church
+-- -----------------------------------------------------
+DROP SCHEMA IF EXISTS `Church` ;
+
+-- -----------------------------------------------------
+-- Schema Church
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `Church` DEFAULT CHARACTER SET utf8 ;
+USE `Church` ;
+
+-- -----------------------------------------------------
+-- Table `Church`.`organization`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Church`.`organization` ;
+
+CREATE TABLE IF NOT EXISTS `Church`.`organization` (
+  `organizationid` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `organizationname` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`organizationid`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `Church`.`calling`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Church`.`calling` ;
+
+CREATE TABLE IF NOT EXISTS `Church`.`calling` (
+  `callingid` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `callingname` VARCHAR(45) NOT NULL,
+  `organizationid` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`callingid`),
+  CONSTRAINT `fk_calling_organization1`
+    FOREIGN KEY (`organizationid`)
+    REFERENCES `Church`.`organization` (`organizationid`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+CREATE INDEX `fk_calling_organization1_idx` ON `Church`.`calling` (`organizationid` ASC) VISIBLE;
+
+
+-- -----------------------------------------------------
+-- Table `Church`.`stake`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Church`.`stake` ;
+
+CREATE TABLE IF NOT EXISTS `Church`.`stake` (
+  `stakeid` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `stakename` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`stakeid`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 11
+DEFAULT CHARACTER SET = utf8mb3;
+
+
+-- -----------------------------------------------------
+-- Table `Church`.`ward`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Church`.`ward` ;
+
+CREATE TABLE IF NOT EXISTS `Church`.`ward` (
+  `wardid` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `wardname` VARCHAR(45) NOT NULL,
+  `stakeid` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`wardid`),
+  CONSTRAINT `fk_ward_stake1`
+    FOREIGN KEY (`stakeid`)
+    REFERENCES `Church`.`stake` (`stakeid`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 35
+DEFAULT CHARACTER SET = utf8mb3;
+
+CREATE INDEX `fk_ward_stake1_idx` ON `Church`.`ward` (`stakeid` ASC) VISIBLE;
+
+
+-- -----------------------------------------------------
+-- Table `Church`.`member`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Church`.`member` ;
+
+CREATE TABLE IF NOT EXISTS `Church`.`member` (
+  `memberid` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  `memberFirstName` VARCHAR(45) NOT NULL,
+  `memberLastName` VARCHAR(45) NOT NULL,
+  `wardid` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`memberid`),
+  CONSTRAINT `fk_member_ward1`
+    FOREIGN KEY (`wardid`)
+    REFERENCES `Church`.`ward` (`wardid`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 109
+DEFAULT CHARACTER SET = utf8mb3;
+
+CREATE INDEX `fk_member_ward1_idx` ON `Church`.`member` (`wardid` ASC) VISIBLE;
+
+
+-- -----------------------------------------------------
+-- Table `Church`.`membercalling`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Church`.`membercalling` ;
+
+CREATE TABLE IF NOT EXISTS `Church`.`membercalling` (
+  `memberid` INT UNSIGNED NOT NULL,
+  `callingid` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`memberid`, `callingid`),
+  CONSTRAINT `fk_member_has_calling_calling1`
+    FOREIGN KEY (`callingid`)
+    REFERENCES `Church`.`calling` (`callingid`),
+  CONSTRAINT `fk_member_has_calling_member1`
+    FOREIGN KEY (`memberid`)
+    REFERENCES `Church`.`member` (`memberid`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+CREATE INDEX `fk_member_has_calling_calling1_idx` ON `Church`.`membercalling` (`callingid` ASC) VISIBLE;
+
+CREATE INDEX `fk_member_has_calling_member1_idx` ON `Church`.`membercalling` (`memberid` ASC) VISIBLE;
+
+
+-- -----------------------------------------------------
+-- Table `Church`.`wardorganization`
+-- -----------------------------------------------------
+DROP TABLE IF EXISTS `Church`.`wardorganization` ;
+
+CREATE TABLE IF NOT EXISTS `Church`.`wardorganization` (
+  `wardid` INT UNSIGNED NOT NULL,
+  `organizationid` INT UNSIGNED NOT NULL,
+  PRIMARY KEY (`wardid`, `organizationid`),
+  CONSTRAINT `fk_ward_has_organization_organization1`
+    FOREIGN KEY (`organizationid`)
+    REFERENCES `Church`.`organization` (`organizationid`),
+  CONSTRAINT `fk_ward_has_organization_ward1`
+    FOREIGN KEY (`wardid`)
+    REFERENCES `Church`.`ward` (`wardid`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8mb3;
+
+CREATE INDEX `fk_ward_has_organization_organization1_idx` ON `Church`.`wardorganization` (`organizationid` ASC) VISIBLE;
+
+CREATE INDEX `fk_ward_has_organization_ward1_idx` ON `Church`.`wardorganization` (`wardid` ASC) VISIBLE;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
