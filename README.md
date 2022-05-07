@@ -21,3 +21,7 @@ AWS link[https://us-west-1.console.aws.amazon.com/rds/home?region=us-west-1#data
 
 * I have to add more members 
 * I want to build this module using python.
+
+# Hours spent
+* 16 hours spent for both research and coding.
+* 2 hours at most daily.
